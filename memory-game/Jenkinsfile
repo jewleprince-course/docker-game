@@ -14,14 +14,32 @@ pipeline {
             }
         }
 
-        stage('terraform oprations') {
+        stage('terraform initialization') {
+            agent {
+                docker {
+                    image: hashicorp/terraform:latest
+                }
+            }
+
             steps {
                 dir('terraform') {
-                    sh """
-                    terraform init
-                    terraform plan
-                    terraform apply --auto-approve
-                    """
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('terraform preview') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('terraform apply') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform apply -auto-approve'
                 }
             }
         }
