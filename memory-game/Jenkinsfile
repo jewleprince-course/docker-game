@@ -17,7 +17,7 @@ pipeline {
         stage('terraform initialization') {
             agent {
                 docker {
-                    image hashicorp/terraform:latest
+                    image 'hashicorp/terraform:latest'
                 }
             }
 
