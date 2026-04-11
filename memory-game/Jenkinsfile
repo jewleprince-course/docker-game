@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    environment {
+        KEY_PATH = "/var/lib/jenkins/devopskey.pem"
+        KEY_NAME = "devopskey.pem"
+    }
+
+    stages {
+
+        stage('terraform oprations') {
+            steps {
+                dir('terraform') {
+                    sh """
+                    terraform init
+                    terraform plan
+                    terraform apply --auto-approve
+                    """
+                }
+            }
+        }
+
+        stage('wait for instance create') {
+            steps {
+                sh 'sleep 120'
+            }
+        }
+
+        stage('Get instance Public IP') {
+            steps {
+                dir('terraform') {
+                    script {
+                        env.SERVER_IP = sh (
+                            script: "terraform output -raw public_ip",
+                            returnStdout: true
+                        ).trim()
+                    }
+                    echo "SERVER IP is: ${SERVER_IP}"
+                }
+            }
+        }
+
+        stage('Install docker') {
+            steps {
+                sh """
+                ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP}
+                sudo apt update
+                sudo apt install -y docker.io
+                sudo systemctl start docker
+                sudo systemctl enable docker
+                sudo usermod -aG docker ubuntu
+                logout
+                """
+            }
+        }
+
+        stage('pull nginx') {
+            steps {
+                sh """
+                ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP}
+                docker pull nginx
+                """
+            }
+        }
+
+        stage('Build docker image') {
+            steps {
+                dir('memory-game') {
+                    sh 'docker build -t my-game .'
+                }
+            }
+        }
+
+        stage('Run container') {
+            steps {
+                dir('memory-game') {
+                    sh 'docker run -d -p 3635:90 my-game'
+                }
+            }
+        }
+    }
+}
