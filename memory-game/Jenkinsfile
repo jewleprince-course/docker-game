@@ -8,6 +8,12 @@ pipeline {
 
     stages {
 
+        stage('Checkout code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/jewleprince-course/docker-game.git'
+            }
+        }
+
         stage('terraform oprations') {
             steps {
                 dir('terraform') {
@@ -77,6 +83,15 @@ pipeline {
                     sh 'docker run -d -p 3635:90 my-game'
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline success"
+        }
+        failure {
+            echo "Pipeline failure. See logs for detail"
         }
     }
 }
