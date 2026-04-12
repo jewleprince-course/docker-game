@@ -1,11 +1,11 @@
-variable "ami-ubuntu" {
+variable "ami_ubuntu" {
     type = string
 }
 
-variable "docker-sg" {
+variable "docker_sg" {
     type = string
 }
 
-variable "jenkins-sg" {
+variable "jenkins_sg" {
     type = string
 }
