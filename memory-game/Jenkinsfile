@@ -93,7 +93,8 @@ pipeline {
             steps {
                 dir('memory-game') {
                     sh """
-                    docker run -d -p 3635:80 --name my-game-container my-game
+                    ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP} "
+                    docker run -d -p 3635:80 --name my-game-container my-game"
                     """
                 }
             }
