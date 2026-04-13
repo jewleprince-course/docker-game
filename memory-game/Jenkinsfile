@@ -92,7 +92,10 @@ pipeline {
         stage('Run container') {
             steps {
                 dir('memory-game') {
-                    sh 'docker run -d -p 3635:80 my-game'
+                    sh """
+                    docker rm -f my-game || true
+                    docker run -d -p 3635:80 --name my-game-container my-game
+                    """
                 }
             }
         }
