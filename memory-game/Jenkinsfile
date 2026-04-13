@@ -61,13 +61,13 @@ pipeline {
         stage('Install docker') {
             steps {
                 sh """
-                ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP}
-                sudo apt update
-                sudo apt install -y docker.io
-                sudo systemctl start docker
-                sudo systemctl enable docker
-                sudo usermod -aG docker ubuntu
-                logout
+                ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP} "
+                sudo apt update && 
+                sudo apt install -y docker.io && 
+                sudo systemctl start docker && 
+                sudo systemctl enable docker && 
+                sudo usermod -aG docker ubuntu && 
+                logout"
                 """
             }
         }
@@ -75,8 +75,8 @@ pipeline {
         stage('pull nginx') {
             steps {
                 sh """
-                ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP}
-                docker pull nginx
+                ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP} "
+                docker pull nginx"
                 """
             }
         }
