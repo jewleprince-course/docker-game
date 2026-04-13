@@ -81,23 +81,14 @@ pipeline {
             }
         }
 
-        stage('Build docker image') {
+        stage('Build docker image and Run container') {
             steps {
                 dir('memory-game') {
                     sh """
+                    scp -i ${KEY_PATH} memory-game ubuntu@${SERVER_IP}:/home/ubuntu/
                     ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP} "
-                    docker build -t my-game ."
-                    """
-                }
-            }
-        }
-
-        stage('Run container') {
-            steps {
-                dir('memory-game') {
-                    sh """
-                    scp -i ${KEY_PATH} memory-game/* ubuntu@${SERVER_IP}:/home/ubuntu/
-                    ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP} "
+                    cd memory-game && 
+                    docker build -t my-game . && 
                     docker run -d -p 3635:80 --name my-game-container my-game"
                     """
                 }
