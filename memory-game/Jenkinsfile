@@ -84,7 +84,10 @@ pipeline {
         stage('Build docker image') {
             steps {
                 dir('memory-game') {
-                    sh 'docker build -t my-game .'
+                    sh """
+                    ssh -i ${KEY_PATH} -o StrictHostKeyChecking=no ubuntu@${SERVER_IP}
+                    docker build -t my-game ."
+                    """
                 }
             }
         }
