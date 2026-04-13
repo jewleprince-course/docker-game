@@ -92,7 +92,7 @@ pipeline {
         stage('Run container') {
             steps {
                 dir('memory-game') {
-                    sh 'docker run -d -p 3635:90 my-game'
+                    sh 'docker run -d -p 3635:80 my-game'
                 }
             }
         }
